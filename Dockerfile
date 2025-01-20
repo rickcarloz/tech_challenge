@@ -4,17 +4,14 @@ WORKDIR /user/app
 
 COPY package.json ./
 
-RUN npm install
+RUN npm install -g pnpm && pnpm install
 
 COPY . .
 
 ARG MONGO_URI
-
 ENV MONGO_URI=${MONGO_URI}
 
-RUN echo "MONG_URI=${MONGO_URI}" > .env
-
-RUN npm i -g pnpm
+RUN echo "MONGO_URI=${MONGO_URI}" > .env
 
 RUN pnpm build
 
