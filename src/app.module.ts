@@ -6,7 +6,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost:27017/posts'), PostsModule, ConfigModule.forRoot({isGlobal: true})],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGO_URI ?? 'mongodb://localhost:27017/default-db'),
+    PostsModule,
+   
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

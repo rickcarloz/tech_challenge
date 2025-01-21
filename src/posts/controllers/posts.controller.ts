@@ -46,5 +46,4 @@ export class PostsController {constructor(private readonly postService: PostsSer
     async deletePost(@Param('id') id: string) {
         return this.postService.deletePost(id);
     }
-    
 }
