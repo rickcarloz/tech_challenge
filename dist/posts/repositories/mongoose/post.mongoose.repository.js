@@ -50,6 +50,12 @@ let PostMongooseRepository = class PostMongooseRepository {
         }
         return deletedPost.toObject();
     }
+    async searchPosts(keyword) {
+        const regex = new RegExp(keyword, 'i');
+        return this.postModel.find({
+            $or: [{ title: regex }, { content: regex }],
+        }).exec();
+    }
 };
 exports.PostMongooseRepository = PostMongooseRepository;
 exports.PostMongooseRepository = PostMongooseRepository = __decorate([

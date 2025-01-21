@@ -7,4 +7,5 @@ export declare class PostsService {
     createPost(post: any): Promise<import("../schemas/models/posts.interface").IPost>;
     updatePost(post: any): Promise<import("../schemas/models/posts.interface").IPost>;
     deletePost(id: string): Promise<import("../schemas/models/posts.interface").IPost>;
+    searchPosts(keyword: string): Promise<import("../schemas/models/posts.interface").IPost[]>;
 }

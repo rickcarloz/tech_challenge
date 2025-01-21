@@ -43,4 +43,12 @@ export class PostMongooseRepository implements PostRepository {
         }
         return deletedPost.toObject() as IPost;
     }
+
+    async searchPosts(keyword: string): Promise<IPost[]> {
+        const regex = new RegExp(keyword, 'i');
+        return this.postModel.find({
+            $or: [{ title: regex }, { content: regex }],
+        }).exec();
+    }
+    
 }

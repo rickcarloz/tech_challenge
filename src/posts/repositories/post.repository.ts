@@ -6,4 +6,5 @@ export abstract class PostRepository {
     abstract createPost(post: IPost): Promise<IPost>;
     abstract updatePost(post: IPost): Promise<IPost>;
     abstract deletePost(productId: string): Promise<IPost>;
+    abstract searchPosts(keyword: string): Promise<IPost[]>;
 }

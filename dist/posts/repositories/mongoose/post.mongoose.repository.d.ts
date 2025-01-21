@@ -9,4 +9,5 @@ export declare class PostMongooseRepository implements PostRepository {
     createPost(post: IPost): Promise<IPost>;
     updatePost(post: IPost): Promise<IPost>;
     deletePost(postId: string): Promise<IPost>;
+    searchPosts(keyword: string): Promise<IPost[]>;
 }

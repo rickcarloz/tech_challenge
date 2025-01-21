@@ -1,90 +1,96 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { PostsController } from './posts.controller';
-// import { PostsService } from '../services/posts.service';
-// import { ZodValidationPipe } from 'src/shared/pipe/zod-validation.pipe';
-// import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PostsController } from './posts.controller';
+import { PostsService } from '../services/posts.service';
 
-// describe('PostsController', () => {
-//     let controller: PostsController;
-//     let service: PostsService;
+describe('PostsController', () => {
+  let postsController: PostsController;
+  let postsService: PostsService;
 
-//     const mockPostsService = {
-//         getAllPosts: jest.fn(),
-//         getPostById: jest.fn(),
-//         createPost: jest.fn(),
-//         updatePost: jest.fn(),
-//         deletePost: jest.fn(),
-//     };
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [PostsController],
+      providers: [
+        {
+          provide: PostsService,
+          useValue: {
+            getAllPosts: jest.fn().mockResolvedValue([
+              { id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' },
+              { id: '2', title: 'Post 2', content: 'Content 2', author: 'Author 2' },
+            ]),
+            searchPosts: jest.fn().mockResolvedValue([
+              { id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' },
+            ]),
+            getPostById: jest.fn().mockResolvedValue({ id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' }),
+            createPost: jest.fn().mockResolvedValue({ id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' }),
+            updatePost: jest.fn().mockResolvedValue({ id: '1', title: 'Updated Post 1', content: 'Updated Content 1', author: 'Author 1' }),
+            deletePost: jest.fn().mockResolvedValue({ id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' }),
+          },
+        },
+      ],
+    }).compile();
 
-//     beforeEach(async () => {
-//         const module: TestingModule = await Test.createTestingModule({
-//             controllers: [PostsController],
-//             providers: [
-//                 {
-//                     provide: PostsService,
-//                     useValue: mockPostsService,
-//                 },
-//             ],
-//         }).compile();
+    postsController = module.get<PostsController>(PostsController);
+    postsService = module.get<PostsService>(PostsService);
+  });
 
-//         controller = module.get<PostsController>(PostsController);
-//         service = module.get<PostsService>(PostsService);
-//     });
+  describe('getAllPosts', () => {
+    it('should return a list of posts', async () => {
+      const result = await postsController.getAllPosts(10, 1);
 
-//     it('should be defined', () => {
-//         expect(controller).toBeDefined();
-//     });
+      expect(postsService.getAllPosts).toHaveBeenCalledWith(10, 1);
+      expect(result).toEqual([
+        { id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' },
+        { id: '2', title: 'Post 2', content: 'Content 2', author: 'Author 2' },
+      ]);
+    });
+  });
 
-//     describe('getAllPosts', () => {
-//         it('should return an array of posts', async () => {
-//             const result = [{ id: '1', title: 'Test Post', content: 'Test Content', author: 'Test Author' }];
-//             jest.spyOn(service, 'getAllPosts').mockResolvedValue(result);
+  describe('searchPosts', () => {
+    it('should return posts that match the search keyword', async () => {
+      const result = await postsController.searchPosts('Post 1');
 
-//             expect(await controller.getAllPosts(10, 1)).toBe(result);
-//         });
-//     });
+      expect(postsService.searchPosts).toHaveBeenCalledWith('Post 1');
+      expect(result).toEqual([
+        { id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' },
+      ]);
+    });
+  });
 
-//     describe('getPostById', () => {
-//         it('should return a single post', async () => {
-//             const result = { id: '1', title: 'Test Post', content: 'Test Content', author: 'Test Author' };
-//             jest.spyOn(service, 'getPostById').mockResolvedValue(result);
+  describe('getPostById', () => {
+    it('should return a post by id', async () => {
+      const result = await postsController.getPostById('1');
 
-//             expect(await controller.getPostById('1')).toBe(result);
-//         });
+      expect(postsService.getPostById).toHaveBeenCalledWith('1');
+      expect(result).toEqual({ id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' });
+    });
+  });
 
-//         it('should throw NotFoundException if post not found', async () => {
-//             jest.spyOn(service, 'getPostById').mockResolvedValue(null);
+  describe('createPost', () => {
+    it('should create a new post', async () => {
+      const post = { title: 'Post 1', content: 'Content 1', author: 'Author 1' };
+      const result = await postsController.createPost(post);
 
-//             await expect(controller.getPostById('1')).rejects.toThrow(NotFoundException);
-//         });
-//     });
+      expect(postsService.createPost).toHaveBeenCalledWith(post);
+      expect(result).toEqual({ id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' });
+    });
+  });
 
-//     describe('createPost', () => {
-//         it('should create a new post', async () => {
-//             const newPost = { title: 'New Post', content: 'New Content', author: 'New Author' };
-//             const result = { id: '1', ...newPost };
-//             jest.spyOn(service, 'createPost').mockResolvedValue(result);
+  describe('updatePost', () => {
+    it('should update an existing post', async () => {
+      const post = { title: 'Updated Post 1', content: 'Updated Content 1' };
+      const result = await postsController.updatePost('1', post);
 
-//             expect(await controller.createPost(newPost)).toBe(result);
-//         });
-//     });
+      expect(postsService.updatePost).toHaveBeenCalledWith({ ...post, id: '1' });
+      expect(result).toEqual({ id: '1', title: 'Updated Post 1', content: 'Updated Content 1', author: 'Author 1' });
+    });
+  });
 
-//     describe('updatePost', () => {
-//         it('should update an existing post', async () => {
-//             const updateData = { title: 'Updated Title' };
-//             const result = { id: '1', ...updateData };
-//             jest.spyOn(service, 'updatePost').mockResolvedValue(result);
+  describe('deletePost', () => {
+    it('should delete a post by id', async () => {
+      const result = await postsController.deletePost('1');
 
-//             expect(await controller.updatePost('1', updateData)).toBe(result);
-//         });
-//     });
-
-//     describe('deletePost', () => {
-//         it('should delete a post', async () => {
-//             const result = { id: '1', title: 'Test Post', content: 'Test Content', author: 'Test Author' };
-//             jest.spyOn(service, 'deletePost').mockResolvedValue(result);
-
-//             expect(await controller.deletePost('1')).toBe(result);
-//         });
-//     });
-// });
+      expect(postsService.deletePost).toHaveBeenCalledWith('1');
+      expect(result).toEqual({ id: '1', title: 'Post 1', content: 'Content 1', author: 'Author 1' });
+    });
+  });
+});

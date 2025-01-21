@@ -31,6 +31,9 @@ let PostsService = class PostsService {
     async deletePost(id) {
         return this.postRepository.deletePost(id);
     }
+    async searchPosts(keyword) {
+        return this.postRepository.searchPosts(keyword);
+    }
 };
 exports.PostsService = PostsService;
 exports.PostsService = PostsService = __decorate([
